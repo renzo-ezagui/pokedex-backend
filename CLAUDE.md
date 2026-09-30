@@ -39,14 +39,12 @@ only if a reason to do so comes up — would then require adding both repos to t
 `renzo-ezagui-homelab` GitHub App installation (browser-only flow, no CLI path) and
 recreating both apps with `coolify app create github`.
 
-### Caddy vhost (public domain)
+### Public domain routing
 
-`pokedex.ezagui.dev`/`pokedex-api.ezagui.dev` needed an explicit vhost in
-`services/caddy/Caddyfile` — the `http://*.lan` wildcard only covers `.lan`, and the
-Cloudflare tunnel's `homelab-dashboard` ingress for these hostnames points at
-`http://localhost:80` (Caddy), not directly at Traefik. Same pattern as
-birds/poker/dashboard. Without it, Caddy returns an empty `200` (no matching site
-block) instead of 404 — easy to miss since it looks superficially like success.
+`pokedex.ezagui.dev`/`pokedex-api.ezagui.dev` route through Traefik's own
+`*.lan`/`*.ezagui.dev` wildcard — no per-domain config needed. Verify with a real
+request, not just `curl -I`: a domain nothing routes returns an empty `200`, not a
+404, so status code alone can look like success when it isn't.
 
 ## Acceso externo
 
