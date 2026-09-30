@@ -16,14 +16,37 @@ memory at startup. See `README.md` for endpoint list and local dev commands.
 
 ## Deploy — Coolify
 
-Project `pokedex`, app uuid `PENDING`, `dockerfile` build pack. Domain:
-`http://pokedex-api.lan` (internal) + `http://pokedex-api.ezagui.dev` (public, via
-the shared `homelab-dashboard` Cloudflare tunnel).
+Project `pokedex` (uuid `5y2ecwnybhakouc3kpuotbhf`), app uuid
+`cqxnwkhj1t2puskwxhkqrgmd`, `dockerfile` build pack, created via the `public` repo
+flow (repo is public — see "Repo visibility" below). Domain: `http://pokedex-api.lan`
+(internal) + `http://pokedex-api.ezagui.dev` (public, via the shared
+`homelab-dashboard` Cloudflare tunnel).
 
 ```bash
-coolify app deploy PENDING
-coolify app logs PENDING
+coolify app deploy cqxnwkhj1t2puskwxhkqrgmd
+coolify app logs cqxnwkhj1t2puskwxhkqrgmd
 ```
+
+### Repo visibility
+
+Made public 2026-09-30 (was created private by the initial bootstrap). No secrets/PII
+in this repo (bundled public Pokemon dataset), and `pokedex-backend`/`pokedex-frontend`
+naming (no `homelab-` prefix) follows the same pattern as `poker-planning-backend`/
+`-frontend` and `playground-birds` — both public repos using Coolify's simpler
+`app create public` flow, which skips the private-repo GitHub App dance
+(`services/coolify/CLAUDE.md` → "Private repos — GitHub App"). Flip back to private
+only if a reason to do so comes up — would then require adding both repos to the
+`renzo-ezagui-homelab` GitHub App installation (browser-only flow, no CLI path) and
+recreating both apps with `coolify app create github`.
+
+### Caddy vhost (public domain)
+
+`pokedex.ezagui.dev`/`pokedex-api.ezagui.dev` needed an explicit vhost in
+`services/caddy/Caddyfile` — the `http://*.lan` wildcard only covers `.lan`, and the
+Cloudflare tunnel's `homelab-dashboard` ingress for these hostnames points at
+`http://localhost:80` (Caddy), not directly at Traefik. Same pattern as
+birds/poker/dashboard. Without it, Caddy returns an empty `200` (no matching site
+block) instead of 404 — easy to miss since it looks superficially like success.
 
 ## Acceso externo
 
